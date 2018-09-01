@@ -2,11 +2,28 @@
 
 include Makefile.common
 
+MNT_LOOP	:= /mnt/loop
+
+$(STAGE_DIR)/squash/LiveOS/ext3fs.img: $(STAGE_DIR)/fs.tar
+	mkdir -p $(MNT_LOOP)
+	mkdir -p $(shell dirname $@)
+	touch $@
+	truncate -s 32G $@
+	mkfs.ext4 -F $@
+	mount -o loop $@ $(MNT_LOOP)
+	tar xpf $< -C $(MNT_LOOP)/
+	umount $(MNT_LOOP)
+
+$(STAGE_DIR)/cd/LiveOS/squashfs.img: $(STAGE_DIR)/squash/LiveOS/ext3fs.img
+	rm -f $@
+	mkdir -p $(shell dirname $@)
+	mksquashfs $(STAGE_DIR)/squash $@
+
 $(STAGE_DIR)/cd/isolinux/isolinux.bin: /usr/share/syslinux/isolinux.bin
 	mkdir -p $(shell dirname $@)
 	cp -f $< $@
 
-$(STAGE_DIR)/cd.iso: $(STAGE_DIR)/cd/isolinux/isolinux.bin
+$(STAGE_DIR)/cd.iso: $(STAGE_DIR)/cd/isolinux/isolinux.bin $(STAGE_DIR)/cd/LiveOS/squashfs.img
 	mkisofs \
 		-J -r \
 		-hide-rr-moved \
@@ -16,5 +33,6 @@ $(STAGE_DIR)/cd.iso: $(STAGE_DIR)/cd/isolinux/isolinux.bin
 		-no-emul-boot \
 		-boot-info-table \
 		-boot-load-size 4 \
+		-V live-img \
 		-o $@ \
 		$(STAGE_DIR)/cd

@@ -2,7 +2,7 @@ FROM centos-deploy-base
 
 RUN yum -y install \
 	e2fsprogs \
-	squashfstools \
+	squashfs-tools \
 	mkisofs \
 	syslinux \
 	make

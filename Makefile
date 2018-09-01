@@ -17,5 +17,12 @@ clean-img-%:
 
 
 
+$(STAGE_DIR)/fs.tar: .docker-img-base
+	mkdir -p $(STAGE_DIR)
+	docker run --name $(IMG_PREFIX)-fs $(IMG_PREFIX)-base
+	docker export -o $@ $(IMG_PREFIX)-fs
+	docker rm $(IMG_PREFIX)-fs
+
+# TODO: only the necessary --cap-add for loopback mount
 $(STAGE_DIR)/%: .docker-img-build Makefile.inner
-	docker run --rm -w /work -v $(shell pwd):/work $(IMG_PREFIX)-build make -f Makefile.inner $@
+	docker run --privileged --rm -w /work -v $(shell pwd):/work $(IMG_PREFIX)-build make -f Makefile.inner $@
