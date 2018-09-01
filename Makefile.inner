@@ -1,0 +1,20 @@
+# this Makefile runs in the container
+
+include Makefile.common
+
+$(STAGE_DIR)/cd/isolinux/isolinux.bin: /usr/share/syslinux/isolinux.bin
+	mkdir -p $(shell dirname $@)
+	cp -f $< $@
+
+$(STAGE_DIR)/cd.iso: $(STAGE_DIR)/cd/isolinux/isolinux.bin
+	mkisofs \
+		-J -r \
+		-hide-rr-moved \
+		-hide-joliet-trans-tbl \
+		-b isolinux/isolinux.bin \
+		-c isolinux/isolinux.cat \
+		-no-emul-boot \
+		-boot-info-table \
+		-boot-load-size 4 \
+		-o $@ \
+		$(STAGE_DIR)/cd

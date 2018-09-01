@@ -1,6 +1,6 @@
-IMG_PREFIX	:= centos-deploy
+include Makefile.common
 
-all:	.docker-img-build
+all:	$(STAGE_DIR)/cd.iso
 
 clean: clean-img-base clean-img-build
 
@@ -14,3 +14,8 @@ clean: clean-img-base clean-img-build
 clean-img-%:
 	test -f .docker-img-$(subst clean-img-,,$@) && docker rmi $(IMG_PREFIX)-$(subst clean-img-,,$@) || true
 	rm -f .docker-img-$(subst clean-img-,,$@)
+
+
+
+$(STAGE_DIR)/%: .docker-img-build Makefile.inner
+	docker run --rm -w /work -v $(shell pwd):/work $(IMG_PREFIX)-build make -f Makefile.inner $@
