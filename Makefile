@@ -1,10 +1,11 @@
 IMG_PREFIX	:= centos-deploy
 
-all:	.docker-img-base
+all:	.docker-img-build
 
-clean: clean-img-base
+clean: clean-img-base clean-img-build
 
 
+.docker-img-build: .docker-img-base
 
 .docker-img-%:	Dockerfile.%
 	docker build -t $(IMG_PREFIX)-$(subst Dockerfile.,,$<) -f $< .
