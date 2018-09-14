@@ -1,8 +1,10 @@
 FROM centos-deploy-base
 
 RUN yum -y install \
+	kernel \
 	e2fsprogs \
 	squashfs-tools \
 	mkisofs \
 	syslinux \
+	dracut-network \
 	make
