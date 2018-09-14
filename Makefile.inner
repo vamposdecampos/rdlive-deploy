@@ -36,3 +36,4 @@ $(STAGE_DIR)/cd.iso: $(STAGE_DIR)/cd/isolinux/isolinux.bin $(STAGE_DIR)/cd/LiveO
 		-V live-img \
 		-o $@ \
 		$(STAGE_DIR)/cd
+	isohybrid $@
