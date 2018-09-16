@@ -1,3 +1,4 @@
 FROM centos-deploy-base
 
 RUN echo root:root | chpasswd
+RUN : > /etc/fstab
