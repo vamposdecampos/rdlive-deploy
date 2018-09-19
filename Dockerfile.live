@@ -2,3 +2,16 @@ FROM centos-deploy-base
 
 RUN echo root:root | chpasswd
 RUN : > /etc/fstab
+
+RUN yum -y install \
+	e2fsprogs \
+	syslinux-extlinux \
+	NetworkManager \
+	grub \
+	iproute \
+	less \
+	newt \
+	rsync \
+	openssh-clients \
+	openssh-server \
+	&& yum clean all

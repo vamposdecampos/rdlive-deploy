@@ -1,0 +1,36 @@
+#!/bin/sh
+set -e
+set -x
+
+target="$1"
+if [ -z "$target" ]; then
+	echo "Usage: $0 /dev/disk/by-{id,path}/... (target disk)"
+	exit 2
+fi
+
+dd if=/usr/share/syslinux/mbr.bin of=$target
+
+sfdisk -D $target <<EOF
+,80,L *
+,,L
+EOF
+
+target_part=${target}-part1
+while [ ! -e $target_part ]; do
+	# wait for udev to run
+	sleep 0.1
+done
+
+mkfs.ext4 -L hd-recovery $target_part
+mkdir -p /mnt/dst
+mount $target_part /mnt/dst
+extlinux -i /mnt/dst
+# TODO: change root= label
+cp /run/initramfs/live/isolinux/isolinux.cfg /mnt/dst/syslinux.cfg
+cp /run/initramfs/live/isolinux/vmlinuz /mnt/dst/
+cp /run/initramfs/live/isolinux/initrd.img /mnt/dst/
+cp -a /run/initramfs/live/LiveOS /mnt/dst/
+umount /mnt/dst
+
+sync
+echo done.
