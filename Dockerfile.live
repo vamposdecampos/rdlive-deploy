@@ -4,10 +4,11 @@ RUN echo root:root | chpasswd
 RUN : > /etc/fstab
 
 RUN yum -y install \
+	kernel \
+	grub2-pc \
 	e2fsprogs \
 	syslinux-extlinux \
 	NetworkManager \
-	grub \
 	iproute \
 	less \
 	newt \

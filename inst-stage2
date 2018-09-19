@@ -1,0 +1,58 @@
+#!/bin/sh
+set -e
+set -x
+
+PARTNUM=2
+
+target="$1"
+if [ -z "$target" ]; then
+	echo "Usage: $0 /dev/disk/by-{id,path}/... (target disk)"
+	exit 2
+fi
+
+target_part=${target}-part${PARTNUM}
+if [ ! -e $target_part ]; then
+	echo "Missing partition '${target_part}'"
+	exit 2
+fi
+
+# TOOD: option to disable the optimization?
+if [ "$(blkid -o value -s TYPE ${target_part})" = "ext4" ]; then
+	echo "skipping mkfs"
+else
+	mkfs.ext4 -L hd-root $target_part
+fi
+
+mkdir -p /mnt/src /mnt/dst
+mount -o ro /dev/mapper/live-base /mnt/src
+mount $target_part /mnt/dst
+
+rsync -axHAX --delete --numeric-ids --info=progress2 /mnt/src/ /mnt/dst/
+
+cat > /mnt/dst/etc/fstab <<EOF
+LABEL=hd-root	/	ext4	errors=remount-ro	0 1
+EOF
+
+
+cd /mnt/dst
+mkdir -p dev sys proc
+mount --bind /dev dev
+mount -t sysfs sysfs sys
+mount -t proc proc proc
+
+#dd if=/dev/zero bs=440 count=1 conv=notrunc of=${target}
+chroot . grub2-install $target
+chroot . grub2-mkconfig -o /boot/grub2/grub.cfg
+chroot . dracut --force --verbose
+
+umount proc
+umount sys
+umount dev
+cd /
+umount /mnt/dst
+umount /mnt/src
+
+sfdisk -A${PARTNUM} $target
+
+sync
+echo done.

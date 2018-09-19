@@ -24,6 +24,10 @@ $(STAGE_DIR)/cd/LiveOS/inst-stage1: inst-stage1
 	mkdir -p $(shell dirname $@)
 	cp -f $< $@
 
+$(STAGE_DIR)/cd/LiveOS/inst-stage2: inst-stage2
+	mkdir -p $(shell dirname $@)
+	cp -f $< $@
+
 $(STAGE_DIR)/cd/isolinux/isolinux.bin: /usr/share/syslinux/isolinux.bin
 	mkdir -p $(shell dirname $@)
 	cp -f $< $@
@@ -45,6 +49,7 @@ $(STAGE_DIR)/cd.iso: \
 		$(STAGE_DIR)/cd/isolinux/isolinux.cfg \
 		$(STAGE_DIR)/cd/LiveOS/squashfs.img \
 		$(STAGE_DIR)/cd/LiveOS/inst-stage1 \
+		$(STAGE_DIR)/cd/LiveOS/inst-stage2 \
 		$(STAGE_DIR)/cd/isolinux/vmlinuz \
 		$(STAGE_DIR)/cd/isolinux/initrd.img
 	mkisofs \

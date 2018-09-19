@@ -14,6 +14,7 @@ sfdisk -D $target <<EOF
 ,80,L *
 ,,L
 EOF
+# TODO: handle sfdisk's 'BLKRRPART: Device or resource busy'
 
 target_part=${target}-part1
 while [ ! -e $target_part ]; do
