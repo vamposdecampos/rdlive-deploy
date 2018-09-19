@@ -25,8 +25,8 @@ mkfs.ext4 -L hd-recovery $target_part
 mkdir -p /mnt/dst
 mount $target_part /mnt/dst
 extlinux -i /mnt/dst
-# TODO: change root= label
-cp /run/initramfs/live/isolinux/isolinux.cfg /mnt/dst/syslinux.cfg
+sed -e 's/menu label.*/menu label ^Start recovery/;s/root=live:\S*/root=live:LABEL=hd-recovery/'  \
+	< /run/initramfs/live/isolinux/isolinux.cfg > /mnt/dst/syslinux.cfg
 cp /run/initramfs/live/isolinux/vmlinuz /mnt/dst/
 cp /run/initramfs/live/isolinux/initrd.img /mnt/dst/
 cp -a /run/initramfs/live/LiveOS /mnt/dst/
