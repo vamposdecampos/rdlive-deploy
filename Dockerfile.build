@@ -1,4 +1,4 @@
-FROM centos-deploy-base
+FROM rdlive-deploy-base
 
 RUN yum -y install \
 	kernel \

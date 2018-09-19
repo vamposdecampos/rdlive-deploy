@@ -1,2 +1,2 @@
-IMG_PREFIX	:= centos-deploy
+IMG_PREFIX	:= rdlive-deploy
 STAGE_DIR	:= out

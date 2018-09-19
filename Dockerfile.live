@@ -1,4 +1,4 @@
-FROM centos-deploy-base
+FROM rdlive-deploy-base
 
 RUN echo root:root | chpasswd
 RUN : > /etc/fstab
